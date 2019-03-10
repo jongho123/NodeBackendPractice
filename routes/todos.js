@@ -4,8 +4,8 @@ var router = express.Router();
 
 const SELECT_ALL = 'SELECT * FROM todo';
 const SELECT_ONE = 'SELECT * FROM todo WHERE todo_id=?';
-const INSERT_ONE = 'INSERT INTO todo (todo_text, is_complete) VALUES (?, ?)';
-const UPDATE_ONE = 'UPDATE todo SET todo_text=?, is_complete=? WHERE todo_id = ?';
+const INSERT_ONE = 'INSERT INTO todo (text, is_complete) VALUES (?, ?)';
+const UPDATE_ONE = 'UPDATE todo SET text=?, is_complete=? WHERE todo_id = ?';
 const DELETE_ONE = 'DELETE FROM todo WHERE todo_id = ?';
 
 var Todo = {
@@ -19,13 +19,14 @@ var Todo = {
 
 	// todo 만들기
 	createTodo: function(req, res) {
-		var todo_text = req.body['todo_text'];
+		var todo_text = req.body['text'];
 		var is_complete = 0;
 
 		db.query(INSERT_ONE, [todo_text, is_complete],
-			function (err, rows) {
+			function (err, results) {
 				if (err) throw err;
-				res.sendStatus(200);
+        
+				res.send({insertId: results.insertId});
 			}
 		);
 	},
@@ -42,8 +43,8 @@ var Todo = {
 	// 해당 id에 해당하는 Todo 수정
 	updateTodo: function(req, res) {
 		var id = req.params.id;
-		var todo_text = req.body['todo_text'];
-		var is_complete = req.body['is_complete']==='true';
+		var todo_text = req.body['text'];
+		var is_complete = req.body['is_complete']==true;
 
 		db.query(UPDATE_ONE, [todo_text, is_complete, id],
 			function (err, rows) {
@@ -58,7 +59,7 @@ var Todo = {
 	deleteTodo: function(req, res) {
 		var id = req.params.id;
 
-		db.query(DELETE_ONE, [id], function (err, rows) {
+		db.query(DELETE_ONE, [id], function (err, results) {
 			if (err) throw err;
 
 			res.sendStatus(200);
