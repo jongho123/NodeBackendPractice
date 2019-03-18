@@ -4,13 +4,16 @@ const app = require('../../app');
 const db = require('../../mysql_db');
 
 const test_data = [
-  { text: 'test1',
+  {
+    text: 'test1',
     is_complete: 1
   },
-  { text: 'test2',
+  {
+    text: 'test2',
     is_complete: 0
   },
-  { text: 'test3',
+  {
+    text: 'test3',
     is_complete: 0
   }
 ]
@@ -20,6 +23,8 @@ describe('Todos Route', function() {
   before(function() {
     db.query("DELETE FROM todo", function(err, result) {
       db.query("INSERT INTO todo (text, is_complete) VALUES ?", [test_data.map(todo => Object.values(todo))], function(err, result) {
+        if (err)
+          return done(err);
         let insertId = result.insertId;
         test_data.forEach(data => {
           data.todo_id = insertId;
@@ -35,8 +40,7 @@ describe('Todos Route', function() {
         .expect(200)
         .end((err, res) => {
           if (err) {
-            done(err);
-            return;
+            return done(err);
           }
 
           // 배열인지 확인
