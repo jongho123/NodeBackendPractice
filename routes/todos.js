@@ -2,16 +2,21 @@ const express = require('express');
 const db = require('../mysql_db');
 const router = express.Router();
 
-const SELECT_ALL = 'SELECT * FROM todo';
-const SELECT_ONE = 'SELECT * FROM todo WHERE todo_id=?';
-const INSERT_ONE = 'INSERT INTO todo (text, is_complete) VALUES (?, ?)';
-const UPDATE_ONE = 'UPDATE todo SET text=?, is_complete=? WHERE todo_id = ?';
-const DELETE_ONE = 'DELETE FROM todo WHERE todo_id = ?';
+const SELECT_ALL = 'SELECT * FROM todo WHERE user_id = ?';
+const SELECT_ONE = 'SELECT * FROM todo WHERE user_id = ? AND todo_id = ?';
+const INSERT_ONE = 'INSERT INTO todo (user_id, text, is_complete) VALUES (?, ?, ?)';
+const UPDATE_ONE = 'UPDATE todo SET text=?, is_complete=? WHERE user_id=? AND todo_id=?';
+const DELETE_ONE = 'DELETE FROM todo WHERE user_id = ? AND todo_id = ?';
 
 const Todo = {
   // 모든 todo list 반환
   getAllTodos: function(req, res) {
-    db.query(SELECT_ALL, function(err, rows) {
+    if (!req.session.uid) {
+      res.sendStatus(401);
+      return;
+    }
+
+    db.query(SELECT_ALL, [req.session.uid], function(err, rows) {
       if (err) throw err;
       res.send(rows);
     });
@@ -19,6 +24,11 @@ const Todo = {
 
   // todo 만들기
   createTodo: function(req, res) {
+    if (!req.session.uid) {
+      res.sendStatus(401);
+      return;
+    }
+
     const todo_text = req.body.text;
     const is_complete = 0;
 
@@ -28,7 +38,7 @@ const Todo = {
       return ;
     }
 
-    db.query(INSERT_ONE, [todo_text, is_complete],
+    db.query(INSERT_ONE, [req.session.uid, todo_text, is_complete],
       function (err, results) {
         if (err) throw err;
         
@@ -46,8 +56,13 @@ const Todo = {
       res.sendStatus(400);
       return ;
     }
+
+    if (!req.session.uid) {
+      res.sendStatus(401);
+      return;
+    }
     
-    db.query(SELECT_ONE, [id], function (err, rows) {
+    db.query(SELECT_ONE, [req.session.uid, id], function (err, rows) {
       if (err) throw err;
       res.send(rows);
     });
@@ -62,12 +77,22 @@ const Todo = {
       res.sendStatus(400);
       return ;
     }
+
+    if (!req.session.uid) {
+      res.sendStatus(401);
+      return;
+    }
  
     let todo_text = req.body.text;
     let is_complete = req.body.is_complete;
 
-    db.query(SELECT_ONE, [id], function (err, rows) {
+    db.query(SELECT_ONE, [req.session.uid, id], function (err, rows) {
       if (err) throw err;
+
+      if (rows.length == 0) {
+        res.sendStatus(400);
+        return;
+      }
       
       if (todo_text == undefined)
         todo_text = rows[0].text;
@@ -76,15 +101,14 @@ const Todo = {
         is_complete = rows[0].is_complete;
 
       is_complete = is_complete == true;
-      db.query(UPDATE_ONE, [todo_text, is_complete, id],
-        function (err, results) {
+      db.query(UPDATE_ONE, [todo_text, is_complete, req.session.uid, id], function (err, results) {
           if (err) throw err;
 
           res.sendStatus(200);
         }
       );
     });
-},
+  },
 
   // id에 해당하는 Todo 지우기
   deleteTodo: function(req, res) {
@@ -95,8 +119,13 @@ const Todo = {
       res.sendStatus(400);
       return ;
     }
+
+    if (!req.session.uid) {
+      res.sendStatus(401);
+      return;
+    }
  
-    db.query(DELETE_ONE, [id], function (err, results) {
+    db.query(DELETE_ONE, [req.session.uid, id], function (err, results) {
       if (err) throw err;
 
       res.sendStatus(200);
