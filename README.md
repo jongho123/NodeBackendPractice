@@ -3,7 +3,7 @@
 ## required
 - Node.js (v8.12 사용)
 - npm (v6.8 사용)
-- Mysql (v5.7.25 사용) ![document](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/database_v1.md#database-%EB%B2%84%EC%A0%84)
+- Mysql (v5.7.25 사용) [document](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/database_v1.md#database-%EB%B2%84%EC%A0%84)
 - Redis (v4.0.9 사용)
 
 ## 모듈 설치
@@ -38,5 +38,5 @@ $ npm test
 ```
 
 ## 문서
-- ![APIs](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/apis.md)
-- ![Testing](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/testing.md#testing-%ED%95%98%EA%B8%B0-%EC%A0%84-%ED%95%84%EC%9A%94%ED%95%9C-%EA%B2%83)
+- [APIs](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/apis.md)
+- [Testing](https://github.com/jongho123/NodeBackendPractice/blob/master/doc/testing.md#testing-%ED%95%98%EA%B8%B0-%EC%A0%84-%ED%95%84%EC%9A%94%ED%95%9C-%EA%B2%83)
